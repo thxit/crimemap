@@ -25,12 +25,10 @@ class DBHelper:
     connection = self.connect()
     try:
 	    #The following introduces a deliberate security flaw
-	    #see section on sql injection below
-	    #'); DELETE FROM crimes; --
-	    #这里实行mysql注入的话，需要在--的注释后加上空格符
-      query = "INSERT INTO crimes (description) VALUES ('{}');".format(data)
+	    #Mitigating sql injection by using %s placeholder
+      query = "INSERT INTO crimes (description) VALUES (%s);"
       with connection.cursor() as cursor:
-        cursor.execute(query)
+        cursor.execute(query,data)
         connection.commit()#这里tab和空格混用将导致错误：IndentationError: unexpected indent
 
     finally:
